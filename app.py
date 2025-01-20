@@ -100,20 +100,28 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        # Retrieve form data
+        customer_id = request.form['customerID']
+        gender = request.form['gender']
+        age = int(request.form['age'])
+        annual_income = float(request.form['annualIncome'])
+        spending_score = int(request.form['spendingScore'])
+
+        # Create a numpy array from the form inputs
+        input_array = np.array([[customer_id, gender, age, annual_income, spending_score]])
+
         # Parse input JSON
-        data = request.json
-        features = np.array(data['features']).reshape(1, -1)
+        data = input_array
+        features = data.reshape(1, -1)
 
         # Scale features
         scaled_features = scaler.transform(features)
 
         # Make prediction
         cluster = kmeans.predict(scaled_features)[0]
-
-        return jsonify({"cluster": int(cluster)})
+        return ({"cluster": int(cluster)})
     except Exception as e:
-        return jsonify({"error": str(e)})
-
+        return ({"error": str(e)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
