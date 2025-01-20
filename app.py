@@ -94,7 +94,7 @@ scaler = joblib.load('scaler.pkl')
 
 @app.route('/')
 def home():
-    return "KMeans Model API is running!"
+    return render_template('index.html')
 
 
 @app.route('/predict', methods=['POST'])
