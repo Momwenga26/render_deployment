@@ -9,7 +9,6 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
 
-app = Flask(__name__)
 df = pd.read_csv("LG_Customer_Data.csv")
 df.head()
 df.info()
@@ -85,4 +84,38 @@ plt.show()
 joblib.dump(kmeans, 'kmeans_model.pkl')
 joblib.dump(scaler, 'scaler.pkl')
 print("Model and scaler have been saved for deployment.")
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Load model and scaler
+kmeans = joblib.load('kmeans_model.pkl')
+scaler = joblib.load('scaler.pkl')
+
+@app.route('/')
+def home():
+    return "KMeans Model API is running!"
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        # Parse input JSON
+        data = request.json
+        features = np.array(data['features']).reshape(1, -1)
+
+        # Scale features
+        scaled_features = scaler.transform(features)
+
+        # Make prediction
+        cluster = kmeans.predict(scaled_features)[0]
+
+        return jsonify({"cluster": int(cluster)})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+
 
