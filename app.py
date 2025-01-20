@@ -108,7 +108,7 @@ def predict():
         spending_score = int(request.form['spendingScore'])
 
         # Create a numpy array from the form inputs
-        input_array = np.array([[customer_id, gender, age, annual_income, spending_score]])
+        input_array = np.array([[age, annual_income, spending_score]])
 
         # Parse input JSON
         data = input_array
